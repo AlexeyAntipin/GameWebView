@@ -194,4 +194,45 @@ class MainActivity : AppCompatActivity() {
         if (cookie != "") web.loadUrl(cookie)
         else web.loadUrl(link)
     }
+
+    fun startGame(){
+        startButton.visibility = View.INVISIBLE
+        gameView.visibility = View.VISIBLE
+
+        gameState = GameState.InProgress
+
+        coins = ArrayList<Coin>()
+
+        val gameLoop : TimerTask = GameLoopTask()
+        val gameTimer : Timer = Timer()
+
+        gameTimer.schedule(gameLoop, 25)
+    }
+
+    inner class GameLoopTask : TimerTask(){
+        override fun run() { this@MainActivity.gameView.reDraw() }
+    }
+
+    inner class GameView(context: Context?) : View(context){
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+        override fun onDraw(canvas: Canvas?) {
+            super.onDraw(canvas)
+
+            var background = this@MainActivity.getDrawable(R.drawable.game_background)
+            if (canvas != null) {
+                background?.setBounds(0, 0, canvas.width, canvas.height)
+                background?.draw(canvas)
+            }
+        }
+
+        override fun onTouchEvent(event: MotionEvent?): Boolean {
+            return super.onTouchEvent(event)
+        }
+
+        fun reDraw() {
+
+        }
+    }
+
 }
