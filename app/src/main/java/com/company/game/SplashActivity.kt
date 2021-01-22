@@ -15,8 +15,6 @@ class SplashActivity : Activity() {
         
         var spr = SharedPreferencesRegistry(getSharedPreferences("save", Context.MODE_PRIVATE))
 
-        val vackground = resources.getDrawable(R.drawable.item_for_splash)
-
         SharedPreferencesRegistry.url.httpGet().responseString {
                 request, response, result ->
             if (response.responseMessage == "OK") {
