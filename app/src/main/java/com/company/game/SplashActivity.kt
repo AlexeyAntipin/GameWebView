@@ -19,7 +19,7 @@ class SplashActivity : Activity() {
         SharedPreferencesRegistry.url.httpGet().responseString {
                 request, response, result ->
             if (response.responseMessage == "OK") {
-                spr.put("url", result.get())
+                spr.put(SharedPreferencesRegistry.savedUrl, result.get())
             } else {
                 Toast.makeText(this, "Что-то пошло не так", Toast.LENGTH_LONG).show()
             }

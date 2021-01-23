@@ -104,7 +104,20 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
                         paint.style = Paint.Style.FILL_AND_STROKE
 
                         var w = paint.measureText(gameActivity?.score.toString())
-                        canvas.drawText(gameActivity?.score.toString(), (width - w) / 2, 100f, paint)
+                        canvas.drawText(gameActivity?.score.toString(),
+                                (width - w) / 2, 100f, paint)
+
+                        if (gameActivity?.gameState == GameState.End){
+                            var paint2 = Paint()
+                            paint2.color = Color.WHITE
+                            paint2.textSize = 40f
+                            paint2.style = Paint.Style.FILL_AND_STROKE
+
+                            var endGameText ="Нажмите в любом месте, чтобы начать заново"
+                            w = paint2.measureText(endGameText)
+                            canvas.drawText(endGameText,
+                                    (width - w) / 2, height - 60f, paint2)
+                        }
                     }
                 } finally {
                     if (canvas != null) {

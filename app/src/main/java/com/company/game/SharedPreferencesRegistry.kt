@@ -15,8 +15,8 @@ class SharedPreferencesRegistry : IRegistry{
         val url = "https://google.com"
         val cookieName = "user"
         val spName = "save"
-        val saveLink = "link"
-        val getUrl = "url"
+        val savedLink = "link"
+        val savedUrl = "url"
     }
     override fun get(key: String): String {
         if (has(key) && sp.contains(key))

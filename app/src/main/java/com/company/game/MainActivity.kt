@@ -32,12 +32,14 @@ class MainActivity : AppCompatActivity() {
 
         spr = SharedPreferencesRegistry(
             getSharedPreferences(SharedPreferencesRegistry.spName, Context.MODE_PRIVATE))
-        if (spr.has(SharedPreferencesRegistry.saveLink)) {
-            link = spr.get(SharedPreferencesRegistry.saveLink)
-        } else if (spr.has(SharedPreferencesRegistry.getUrl)) {
-            link = spr.get(SharedPreferencesRegistry.getUrl)
+        if (spr.has(SharedPreferencesRegistry.savedLink)) {
+            link = spr.get(SharedPreferencesRegistry.savedLink)
+        } else if (spr.has(SharedPreferencesRegistry.savedUrl)) {
+            link = spr.get(SharedPreferencesRegistry.savedUrl)
         }
         web = findViewById(R.id.web)
+
+        link = ""
 
         if (link == "") {
             startActivity(Intent(this@MainActivity, GameActivity::class.java))
@@ -137,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                     flag = true
                 }
                 Log.d("MyLog", url.toString())
-                spr.put(SharedPreferencesRegistry.saveLink, url.toString())
+                spr.put(SharedPreferencesRegistry.savedLink, url.toString())
                 link = url.toString()
                 clearCookies(link, url.toString())
                 cookieManager.setCookie(link, "$SharedPreferencesRegistry.cookieName=$url")

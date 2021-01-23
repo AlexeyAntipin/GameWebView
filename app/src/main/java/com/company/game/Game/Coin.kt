@@ -2,8 +2,10 @@ package com.company.game.Game
 
 class Coin (var x : Float, var y : Float) {
 
+    var ttl : Int = 0
+
     companion object {
-        var size : Int = 50;
+        var size : Int = 50
     }
 
     var tapped : Boolean = false
