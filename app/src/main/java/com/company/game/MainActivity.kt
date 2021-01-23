@@ -1,132 +1,196 @@
 package com.company.game
 
-import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.DrawFilter
-import android.graphics.Picture
-import android.graphics.drawable.Drawable
-import android.media.Image
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
+import android.view.KeyEvent
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import com.company.game.Game.Coin
-import com.company.game.Game.GameState
-import com.company.game.Game.GameView
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sqrt
+import android.webkit.*
 
 class MainActivity : AppCompatActivity() {
 
-    val random : Random = Random()
+    val ONESIGNAL_APP_ID = ""
+    val APPMETRICA_API_KEY = ""
+    var link = ""
+    lateinit var spr: SharedPreferencesRegistry
+    var flag = false
 
-    lateinit var gameView: GameView
-    lateinit var startButton: Button
-    lateinit var layout: LinearLayout
+    private val FILECHOOSER_RESULTCODE = 1
+    var uploadMessage: ValueCallback<Array<Uri>>? = null
 
-    var coins = mutableListOf<Coin>()
-
-    lateinit var timer: CountDownTimer
-    var score: Int = 0
+    lateinit var web: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        layout = findViewById<LinearLayout>(R.id.mainLayout)
-
-        startButton = findViewById(R.id.startButton)
-        startButton.visibility = View.VISIBLE
-        startButton.setOnClickListener(View.OnClickListener { startGame() })
-    }
-
-    fun startGame(){
-        score = 0;
-
-        startButton.visibility = View.INVISIBLE
-
-        coins = mutableListOf<Coin>()
-
-        gameView = GameView(this)
-        gameView.mainActivity = this
-
-        layout.addView(gameView, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT))
-
-        timer = object: CountDownTimer(1000000000, 60) {
-            override fun onTick(millisUntilFinished: Long) { gameTick() }
-            override fun onFinish() {}
+        spr = SharedPreferencesRegistry(
+            getSharedPreferences(SharedPreferencesRegistry.spName, Context.MODE_PRIVATE))
+        if (spr.has(SharedPreferencesRegistry.saveLink)) {
+            link = spr.get(SharedPreferencesRegistry.saveLink)
+        } else if (spr.has(SharedPreferencesRegistry.getUrl)) {
+            link = spr.get(SharedPreferencesRegistry.getUrl)
         }
+        web = findViewById(R.id.web)
 
-        timer.start()
-    }
-
-    fun rand(from : Int, to : Int) : Int{
-        return random.nextInt(to - from) + from
-    }
-
-    fun dist(x1: Float, y1 : Float, x2 : Float, y2 : Float) : Float {
-        return sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)).toDouble()).toFloat()
-    }
-
-    fun gameTap(x: Float, y: Float){
-        synchronized(this) {
-            for(coin in coins){
-                if (dist(x, y, coin.GetX(), coin.GetY()) < Coin.size){
-                    coin.tapped = true
-                    score++
-                    break
-                }
-            }
+        if (link == "") {
+            startActivity(Intent(this@MainActivity, GameActivity::class.java))
+        }
+        else {
+            setWebView()
         }
     }
 
-    fun gameTick(){
-        synchronized(this) {
 
-            if (random.nextInt(100) <= min(25, max( 5, score / 5))) {
-                var coin: Coin = Coin(rand(2 * Coin.size, gameView.width - 2 * Coin.size) * 1f, 50f)
-                coins.add(coin)
-            }
-
-            var temp_coins = mutableListOf<Coin>()
-
-            for (coin in coins) {
-                if (coin.tapped) {
-                    continue
-                }
-
-                coin.Move(0f, 8f)
-
-                if (coin.GetY() < gameView.height - Coin.size * 2) {
-                    temp_coins.add(coin)
-                } else {
-                    timer.cancel()
-
-                    startButton.text = "Начать заново"
-                    startButton.visibility = View.VISIBLE
-
-                    gameView.stop()
-                    //gameView.visibility = View.GONE
-
-                    layout.removeViewInLayout(gameView)
-                    break
+    private fun getCookie(url: String, name: String): String {
+        var value = ""
+        var cookie_manager = CookieManager.getInstance()
+        var cookies = cookie_manager.getCookie(url)
+        if (cookies != null) {
+            var temp = cookies.split(";")
+            for (str in temp) {
+                if (str.contains(name)) {
+                    var temp1 = str.split("=")
+                    value = temp1[1]
+                    for (i in 2..(temp1.size - 1)) value += '=' + temp1[i]
                 }
             }
-
-            coins = temp_coins
         }
+        return value
+    }
+
+    fun clearCookies(domain: String?, url: String) {
+        CookieSyncManager.createInstance(this)
+        val cookieManager = CookieManager.getInstance()
+        val cookiestring = cookieManager.getCookie(domain)
+        if (cookiestring != null) {
+            val cookies = cookiestring.split(";".toRegex()).toTypedArray()
+            for (i in cookies.indices) {
+                val cookieparts = cookies[i].split("=".toRegex()).toTypedArray()
+                cookieManager.setCookie(domain, cookieparts[0].trim { it <= ' ' } + "=$url")
+            }
+        }
+        CookieSyncManager.getInstance().sync()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (requestCode != FILECHOOSER_RESULTCODE || uploadMessage == null) {
+                super.onActivityResult(requestCode, resultCode, data)
+                return
+            }
+            var results: Array<Uri>? = null
+
+            if (resultCode === Activity.RESULT_OK) {
+                if (data != null) {
+                    val dataString = data.dataString
+                    if (dataString != null) {
+                        results = arrayOf(Uri.parse(dataString))
+                    }
+                }
+            }
+            uploadMessage!!.onReceiveValue(results)
+            uploadMessage = null
+        }
+
+        return
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (event != null) {
+            if (event.keyCode == KeyEvent.KEYCODE_BACK || web.canGoBack()) {
+                web.goBack()
+            } else if (event.keyCode != KeyEvent.KEYCODE_BACK) {
+                super.onKeyDown(keyCode, event)
+            }
+        }
+        return true
+    }
+
+    private fun setWebView() {
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(web, true)
+        var cookie = getCookie(link, SharedPreferencesRegistry.cookieName)
+
+        web.webViewClient = object : WebViewClient() {
+            override fun onUnhandledKeyEvent(view: WebView?, event: KeyEvent?) {
+                if (event != null) {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK || web.canGoBack()) {
+                        web.goBack()
+                    } else if (event.keyCode != KeyEvent.KEYCODE_BACK) {
+                        super.onUnhandledKeyEvent(view, event)
+                    }
+                }
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                if (!flag) {
+                    web.visibility = View.VISIBLE
+                    flag = true
+                }
+                Log.d("MyLog", url.toString())
+                spr.put(SharedPreferencesRegistry.saveLink, url.toString())
+                link = url.toString()
+                clearCookies(link, url.toString())
+                cookieManager.setCookie(link, "$SharedPreferencesRegistry.cookieName=$url")
+            }
+        }
+
+        web.webChromeClient = object : WebChromeClient() {
+
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onShowFileChooser(mWebView: WebView, filePathCallback: ValueCallback<Array<Uri>>, fileChooserParams: FileChooserParams): Boolean {
+                if (uploadMessage != null) {
+                    uploadMessage!!.onReceiveValue(null)
+                    uploadMessage = null
+                }
+
+                uploadMessage = filePathCallback
+
+                var contentSelectionIntent = Intent(Intent.ACTION_GET_CONTENT)
+                contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE)
+                contentSelectionIntent.setType("image/*")
+
+                var intentArray: Array<Intent?>
+
+                intentArray = arrayOfNulls(0)
+
+
+                var chooserIntent = Intent(Intent.ACTION_CHOOSER)
+                chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE)
+
+                return true
+            }
+        }
+
+        web.settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+        web.settings.javaScriptEnabled = true
+        web.settings.loadsImagesAutomatically = true
+        web.settings.domStorageEnabled = true
+        web.settings.loadWithOverviewMode = true
+        web.settings.useWideViewPort = true
+        web.settings.builtInZoomControls = true
+        web.settings.displayZoomControls = false
+        web.settings.databaseEnabled = true
+        web.settings.allowContentAccess = true
+        web.settings.allowFileAccess = true
+        web.settings.javaScriptCanOpenWindowsAutomatically = true
+        web.settings.setSupportZoom(true)
+        web.settings.defaultTextEncodingName = "utf-8"
+        web.settings.pluginState = WebSettings.PluginState.ON
+
+        if (cookie != "") web.loadUrl(cookie)
+        else web.loadUrl(link)
     }
 }
