@@ -13,7 +13,8 @@ class SplashActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        var spr = SharedPreferencesRegistry(getSharedPreferences("save", Context.MODE_PRIVATE))
+        var spr = SharedPreferencesRegistry(
+            getSharedPreferences(SharedPreferencesRegistry.spName, Context.MODE_PRIVATE))
 
         SharedPreferencesRegistry.url.httpGet().responseString {
                 request, response, result ->

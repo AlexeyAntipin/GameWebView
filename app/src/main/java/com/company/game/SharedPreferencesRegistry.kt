@@ -12,7 +12,11 @@ class SharedPreferencesRegistry : IRegistry{
     }
 
     companion object {
-        val url = ""
+        val url = "https://google.com"
+        val cookieName = "user"
+        val spName = "save"
+        val saveLink = "link"
+        val getUrl = "url"
     }
     override fun get(key: String): String {
         if (has(key) && sp.contains(key))

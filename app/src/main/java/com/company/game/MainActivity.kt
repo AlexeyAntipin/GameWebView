@@ -17,17 +17,12 @@ class MainActivity : AppCompatActivity() {
 
     val ONESIGNAL_APP_ID = ""
     val APPMETRICA_API_KEY = ""
-    val cookieName = "user"
-    val spName = "save"
-    val saveLink = "link"
-    val getUrl = "url"
     var link = ""
     lateinit var spr: SharedPreferencesRegistry
     var flag = false
 
     private val FILECHOOSER_RESULTCODE = 1
     var uploadMessage: ValueCallback<Array<Uri>>? = null
-    private var mCameraPhotoPath = ""
 
     lateinit var web: WebView
 
@@ -35,15 +30,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        spr = SharedPreferencesRegistry(getSharedPreferences(spName, Context.MODE_PRIVATE))
-        if (spr.has(saveLink)) {
-            link = spr.get(saveLink)
-        } else if (spr.has(getUrl)) {
-            link = spr.get(getUrl)
+        spr = SharedPreferencesRegistry(
+            getSharedPreferences(SharedPreferencesRegistry.spName, Context.MODE_PRIVATE))
+        if (spr.has(SharedPreferencesRegistry.saveLink)) {
+            link = spr.get(SharedPreferencesRegistry.saveLink)
+        } else if (spr.has(SharedPreferencesRegistry.getUrl)) {
+            link = spr.get(SharedPreferencesRegistry.getUrl)
         }
-
         web = findViewById(R.id.web)
-        setWebView()
+
+        if (link == "") {
+            startActivity(Intent(this@MainActivity, GameActivity::class.java))
+        }
+        else {
+            setWebView()
+        }
     }
 
 
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(web, true)
-        var cookie = getCookie(link, cookieName)
+        var cookie = getCookie(link, SharedPreferencesRegistry.cookieName)
 
         web.webViewClient = object : WebViewClient() {
             override fun onUnhandledKeyEvent(view: WebView?, event: KeyEvent?) {
@@ -136,13 +137,11 @@ class MainActivity : AppCompatActivity() {
                     flag = true
                 }
                 Log.d("MyLog", url.toString())
-                spr.put(saveLink, url.toString())
+                spr.put(SharedPreferencesRegistry.saveLink, url.toString())
                 link = url.toString()
                 clearCookies(link, url.toString())
-                cookieManager.setCookie(link, "$cookieName=$url")
+                cookieManager.setCookie(link, "$SharedPreferencesRegistry.cookieName=$url")
             }
-
-
         }
 
         web.webChromeClient = object : WebChromeClient() {
@@ -194,45 +193,4 @@ class MainActivity : AppCompatActivity() {
         if (cookie != "") web.loadUrl(cookie)
         else web.loadUrl(link)
     }
-
-    fun startGame(){
-        startButton.visibility = View.INVISIBLE
-        gameView.visibility = View.VISIBLE
-
-        gameState = GameState.InProgress
-
-        coins = ArrayList<Coin>()
-
-        val gameLoop : TimerTask = GameLoopTask()
-        val gameTimer : Timer = Timer()
-
-        gameTimer.schedule(gameLoop, 25)
-    }
-
-    inner class GameLoopTask : TimerTask(){
-        override fun run() { this@MainActivity.gameView.reDraw() }
-    }
-
-    inner class GameView(context: Context?) : View(context){
-
-        @SuppressLint("UseCompatLoadingForDrawables")
-        override fun onDraw(canvas: Canvas?) {
-            super.onDraw(canvas)
-
-            var background = this@MainActivity.getDrawable(R.drawable.game_background)
-            if (canvas != null) {
-                background?.setBounds(0, 0, canvas.width, canvas.height)
-                background?.draw(canvas)
-            }
-        }
-
-        override fun onTouchEvent(event: MotionEvent?): Boolean {
-            return super.onTouchEvent(event)
-        }
-
-        fun reDraw() {
-
-        }
-    }
-
 }
