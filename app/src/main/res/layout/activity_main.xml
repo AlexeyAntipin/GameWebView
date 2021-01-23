@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -23,14 +24,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:text="Start" />
 
     </LinearLayout>
 
-    <view class="com.company.game.MainActivity$GameView"
+    <!--<com.company.game.Game.GameView
+        android:id="@+id/gameView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"/>
+        android:visibility="invisible"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
