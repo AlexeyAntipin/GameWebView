@@ -12,6 +12,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.company.game.GameActivity
 import com.company.game.R
+import com.company.game.Utils
 
 
 class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback {
@@ -25,10 +26,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         holder.addCallback (this)
     }
 
-
-    constructor(context: Context?, attributes: AttributeSet) : this(context) {
-
-    }
+    constructor(context: Context?, attributes: AttributeSet) : this(context) {}
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
 
@@ -86,6 +84,8 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
                         _background.draw(canvas)
 
                         synchronized(gameActivity!!){
+                            Coin.size = (height * 0.1).toInt()
+
                             for (coin in gameActivity?.coins!!) {
                                 if (coin.tapped) {
                                     continue
@@ -100,20 +100,23 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
                         var paint = Paint()
                         paint.color = Color.WHITE
-                        paint.textSize = 80f
+                        paint.textSize = Utils.Surface.getTextSizeByWidth(
+                                paint, gameActivity?.score.toString(), (width * 0.15).toInt())
                         paint.style = Paint.Style.FILL_AND_STROKE
 
                         var w = paint.measureText(gameActivity?.score.toString())
                         canvas.drawText(gameActivity?.score.toString(),
-                                (width - w) / 2, 100f, paint)
+                                (width - w) / 2, 10f + paint.textSize, paint)
 
                         if (gameActivity?.gameState == GameState.End){
-                            var paint2 = Paint()
+                            val endGameText ="Нажмите в любом месте, чтобы начать заново"
+
+                            val paint2 = Paint()
                             paint2.color = Color.WHITE
-                            paint2.textSize = 40f
+                            paint2.textSize = Utils.Surface.getTextSizeByWidth(
+                                    paint2, endGameText, (width * 0.7).toInt())
                             paint2.style = Paint.Style.FILL_AND_STROKE
 
-                            var endGameText ="Нажмите в любом месте, чтобы начать заново"
                             w = paint2.measureText(endGameText)
                             canvas.drawText(endGameText,
                                     (width - w) / 2, height - 60f, paint2)

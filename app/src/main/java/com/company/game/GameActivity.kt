@@ -2,6 +2,7 @@ package com.company.game
 
 import android.content.Context
 import android.os.*
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -71,14 +72,6 @@ class GameActivity : AppCompatActivity() {
         timer.start()
     }
 
-    fun rand(from : Int, to : Int) : Int{
-        return random.nextInt(to - from) + from
-    }
-
-    fun dist(x1: Float, y1 : Float, x2 : Float, y2 : Float) : Float {
-        return sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)).toDouble()).toFloat()
-    }
-
     fun gameTap(x: Float, y: Float){
         if (gameState == GameState.Pause) {
             return
@@ -87,7 +80,7 @@ class GameActivity : AppCompatActivity() {
         if (gameState == GameState.InProcess) {
             synchronized(this) {
                 for (coin in coins) {
-                    if (dist(x, y, coin.GetX(), coin.GetY()) < Coin.size) {
+                    if (Utils.Math.dist(x, y, coin.GetX(), coin.GetY()) < Coin.size) {
                         coin.tapped = true
                         score++
                         break
@@ -106,7 +99,7 @@ class GameActivity : AppCompatActivity() {
         synchronized(this) {
 
             if (random.nextInt(100) <= min(25, max( 5, score / 5))) {
-                var coin: Coin = Coin(rand(2 * Coin.size, gameView.width - 2 * Coin.size) * 1f, 50f)
+                var coin: Coin = Coin(Utils.Math.rand(random, 2 * Coin.size, gameView.width - 2 * Coin.size) * 1f, 50f)
                 coins.add(coin)
             }
 
