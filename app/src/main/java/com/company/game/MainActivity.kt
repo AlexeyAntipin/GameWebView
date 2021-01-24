@@ -11,10 +11,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.webkit.*
+import com.onesignal.OneSignal
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
+import java.util.Map;
 
 class MainActivity : AppCompatActivity() {
 
+    private val devKey = "qrdZGj123456789"
     val ONESIGNAL_APP_ID = ""
     val APPMETRICA_API_KEY = ""
     var link = ""
@@ -27,7 +34,26 @@ class MainActivity : AppCompatActivity() {
     lateinit var web: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val decorView = window.decorView
+        val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        decorView.systemUiVisibility = uiOptions
+
         super.onCreate(savedInstanceState)
+
+        /*OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
+
+        // OneSignal Initialization
+        OneSignal.initWithContext(this)
+        OneSignal.setAppId(ONESIGNAL_APP_ID)
+
+        val config = YandexMetricaConfig.newConfigBuilder(APPMETRICA_API_KEY).build()
+        YandexMetrica.activate(applicationContext, config)
+        YandexMetrica.enableActivityAutoTracking(application)*/
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
         spr = SharedPreferencesRegistry(
@@ -38,8 +64,6 @@ class MainActivity : AppCompatActivity() {
             link = spr.get(SharedPreferencesRegistry.savedUrl)
         }
         web = findViewById(R.id.web)
-
-        link = ""
 
         if (link == "") {
             startActivity(Intent(this@MainActivity, GameActivity::class.java))

@@ -12,7 +12,7 @@ class SharedPreferencesRegistry : IRegistry{
     }
 
     companion object {
-        val url = "https://google.com"
+        val url = "http://185.206.147.157/text"
         val cookieName = "user"
         val spName = "save"
         val savedLink = "link"

@@ -34,10 +34,6 @@ class GameActivity : AppCompatActivity() {
     var gameState : GameState = GameState.Pause
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val decorView = window.decorView
-        val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        decorView.systemUiVisibility = uiOptions
 
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -126,10 +122,10 @@ class GameActivity : AppCompatActivity() {
                 var speed : Int = 8
 
                 if (coin.ttl < 50)
-                    speed = 8
+                    speed = 7
                 else if (coin.ttl in 50..100)
-                    speed = 6
-                else speed = 2
+                    speed = 5
+                else speed = 3
 
 
                 coin.Move(0f, speed * 1f)

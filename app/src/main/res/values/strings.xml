@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Game</string>
     <string name="start">Начать</string>
+    <string name="facebook_app_id">[]</string>
 </resources>
