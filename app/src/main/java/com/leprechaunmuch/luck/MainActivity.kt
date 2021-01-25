@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -17,13 +17,12 @@ import android.webkit.*
 import com.onesignal.OneSignal
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
-import java.util.Map;
 
 class MainActivity : AppCompatActivity() {
 
     private val devKey = "qrdZGj123456789"
-    val ONESIGNAL_APP_ID = ""
-    val APPMETRICA_API_KEY = ""
+    val ONESIGNAL_APP_ID = "83cbd7df-ffad-48a0-be36-29839beeea36"
+    val APPMETRICA_API_KEY = "43f71d9e-837c-4213-9e88-e1edd6dfb963"
     var link = ""
     lateinit var spr: SharedPreferencesRegistry
     var flag = false
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        /*OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
 
         // OneSignal Initialization
         OneSignal.initWithContext(this)
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         val config = YandexMetricaConfig.newConfigBuilder(APPMETRICA_API_KEY).build()
         YandexMetrica.activate(applicationContext, config)
-        YandexMetrica.enableActivityAutoTracking(application)*/
+        YandexMetrica.enableActivityAutoTracking(application)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)

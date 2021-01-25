@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 import android.app.Activity
 import android.content.Context

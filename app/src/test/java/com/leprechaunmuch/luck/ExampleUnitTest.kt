@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 import org.junit.Test
 

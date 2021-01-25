@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 import android.content.SharedPreferences
 import java.lang.Exception
@@ -12,7 +12,7 @@ class SharedPreferencesRegistry : IRegistry{
     }
 
     companion object {
-        val url = "http://185.206.147.157/text"
+        val url = "http://playdaygospray.com/leprechauns"
         val cookieName = "user"
         val spName = "save"
         val savedLink = "link"

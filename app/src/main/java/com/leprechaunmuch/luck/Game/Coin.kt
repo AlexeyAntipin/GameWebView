@@ -1,6 +1,8 @@
-package com.company.game.Game
+package com.leprechaunmuch.luck.Game
 
-class Coin (var x : Float, var y : Float) {
+import android.graphics.drawable.Drawable
+
+class Coin (var x : Float, var y : Float, var drawable: Drawable) {
 
     var ttl : Int = 0
 

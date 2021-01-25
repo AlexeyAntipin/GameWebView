@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 interface IRegistry {
     fun get(key: String) : String

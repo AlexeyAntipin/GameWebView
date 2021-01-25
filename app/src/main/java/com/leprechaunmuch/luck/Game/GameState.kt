@@ -1,4 +1,4 @@
-package com.company.game.Game
+package com.leprechaunmuch.luck.Game
 
 enum class GameState {
     InProcess,

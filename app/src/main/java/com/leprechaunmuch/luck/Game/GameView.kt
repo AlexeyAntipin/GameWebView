@@ -1,4 +1,4 @@
-package com.company.game.Game
+package com.leprechaunmuch.luck.Game
 
 import android.content.Context
 import android.content.res.Resources
@@ -10,15 +10,15 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.company.game.GameActivity
-import com.company.game.R
-import com.company.game.Utils
+import com.leprechaunmuch.luck.GameActivity
+import com.leprechaunmuch.luck.R
+import com.leprechaunmuch.luck.Utils
 
 
 class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback {
 
-    var gameActivity : GameActivity? = null;
-    lateinit var drawThread : DrawThread;
+    var gameActivity : GameActivity? = null
+    lateinit var drawThread : DrawThread
 
     init{
         setZOrderOnTop(true)
@@ -63,8 +63,8 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
     inner class DrawThread(private val surfaceHolder: SurfaceHolder, resources: Resources?) : Thread() {
         private var runFlag = false
-        private lateinit var _coin: Drawable;
-        private lateinit var _background: Drawable;
+        private lateinit var _coins: MutableList<Drawable>
+        private lateinit var _background: Drawable
 
         fun setRunning(run: Boolean) {
             runFlag = run
@@ -72,7 +72,9 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
         override fun run() {
             var canvas: Canvas?
-            _coin = gameActivity?.getDrawable(R.drawable.coin)!!
+            _coins = mutableListOf(gameActivity?.getDrawable(R.drawable.coin1)!!,
+                gameActivity?.getDrawable(R.drawable.coin2)!!,
+                gameActivity?.getDrawable(R.drawable.coin3)!!)
             _background = gameActivity?.getDrawable(R.drawable.background)!!
             _background.setBounds(0, 0, width, height)
 
@@ -84,17 +86,18 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
                         _background.draw(canvas)
 
                         synchronized(gameActivity!!){
-                            Coin.size = (height * 0.1).toInt()
+                            Coin.size = (height * 0.07).toInt()
 
                             for (coin in gameActivity?.coins!!) {
                                 if (coin.tapped) {
                                     continue
                                 }
 
-                                _coin.setBounds(
+                                var r = java.util.Random().nextInt(2)
+                                coin.drawable.setBounds(
                                     (coin.GetX() - Coin.size).toInt(), (coin.GetY() - Coin.size).toInt(),
                                     (coin.GetX() + Coin.size).toInt(), (coin.GetY() + Coin.size).toInt())
-                                _coin.draw(canvas)
+                                coin.drawable.draw(canvas)
                             }
                         }
 

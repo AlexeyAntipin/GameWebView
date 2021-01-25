@@ -1,4 +1,4 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
 import android.app.Application
 import android.util.Log
@@ -7,11 +7,11 @@ import com.appsflyer.AppsFlyerLib
 import com.appsflyer.AppsFlyerLibCore.LOG_TAG
 
 class MyApplication : Application() {
-    private val devKey = "qrdZGj123456789"
+    private val devKey = "BfvKESayWFunam4Zp4Haja"
 
     override fun onCreate() {
         super.onCreate()
-        /*val conversionDataListener  = object : AppsFlyerConversionListener {
+        val conversionDataListener  = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
                 data?.let { cvData ->
                     cvData.map {
@@ -36,6 +36,6 @@ class MyApplication : Application() {
         }
 
         AppsFlyerLib.getInstance().init(devKey, conversionDataListener, this)
-        AppsFlyerLib.getInstance().startTracking(this)*/
+        AppsFlyerLib.getInstance().startTracking(this)
     }
 }

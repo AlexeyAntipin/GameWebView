@@ -1,8 +1,7 @@
-package com.company.game
+package com.leprechaunmuch.luck
 
-import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.*
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -10,13 +9,12 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.company.game.Game.Coin
-import com.company.game.Game.GameState
-import com.company.game.Game.GameView
+import com.leprechaunmuch.luck.Game.Coin
+import com.leprechaunmuch.luck.Game.GameState
+import com.leprechaunmuch.luck.Game.GameView
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sqrt
 
 
 class GameActivity : AppCompatActivity() {
@@ -33,6 +31,7 @@ class GameActivity : AppCompatActivity() {
     var score: Int = 0
 
     var gameState : GameState = GameState.Pause
+    lateinit var _coins: MutableList<Drawable>
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -40,6 +39,10 @@ class GameActivity : AppCompatActivity() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_game)
+
+        _coins = mutableListOf(getDrawable(R.drawable.coin1)!!,
+            getDrawable(R.drawable.coin2)!!,
+            getDrawable(R.drawable.coin3)!!)
 
         layout = findViewById(R.id.mainLayout)
 
@@ -99,7 +102,8 @@ class GameActivity : AppCompatActivity() {
         synchronized(this) {
 
             if (random.nextInt(100) <= min(25, max( 5, score / 5))) {
-                var coin: Coin = Coin(Utils.Math.rand(random, 2 * Coin.size, gameView.width - 2 * Coin.size) * 1f, 50f)
+                var coin: Coin = Coin(Utils.Math.rand(random, 2 * Coin.size, gameView.width - 2 * Coin.size) * 1f,
+                    50f, _coins[Random().nextInt(3)])
                 coins.add(coin)
             }
 
@@ -115,10 +119,10 @@ class GameActivity : AppCompatActivity() {
                 var speed : Int = 8
 
                 if (coin.ttl < 50)
-                    speed = 7
+                    speed = 4
                 else if (coin.ttl in 50..100)
-                    speed = 5
-                else speed = 3
+                    speed = 3
+                else speed = 2
 
 
                 coin.Move(0f, speed * 1f)
